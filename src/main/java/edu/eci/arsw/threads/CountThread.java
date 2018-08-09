@@ -9,6 +9,28 @@ package edu.eci.arsw.threads;
  *
  * @author hcadavid
  */
-public class CountThread {
+public class CountThread implements Runnable{
+
+    private int numa;
+    private  int numb;
+
+    public CountThread(int numa, int numb) {        
+        this.numa=numa;
+        this.numb=numb;
+    }
+    
+    
+    
+    @Override
+    public void run() {
+        for (int i = numa; i< numb+1; i++) {
+            System.out.println("Los numeros son:"+i);            
+            
+        }
+
+    }
+    
+    
+    
     
 }
