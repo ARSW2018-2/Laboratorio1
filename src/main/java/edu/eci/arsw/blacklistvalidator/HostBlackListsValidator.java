@@ -40,18 +40,20 @@ public class HostBlackListsValidator {
         int checkedListsCount=0;
         int rango=0;
         int contador=0;
+        
         //skds.
         //segmentacion.
         
         if(N/2==0){
             rango=numServ/N;
-            for (int i =0; i<rango; i++){
-                Thread t= new Thread (new Block ());
-                t.start();
+            
+            for (int i =0; i<N; i++){
                 
-            
+                Thread t= new Thread (new Block (contador+rango, ipaddress,N));
+                segmentacion.add(t);
+                contador+=rango;
+                t.start();            
             }
-            
             
             
             //Se va a obtener la lista de sservidores a consultar
