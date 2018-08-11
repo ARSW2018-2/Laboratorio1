@@ -30,10 +30,16 @@ public class HostBlackListsValidator {
      * @return  Blacklists numbers where the given host's IP address was found.
      */
     public List<Integer> checkHost(String ipaddress, int N){
-        LinkedList<Thread> segmentacion=new LinkedList<Thread>();
-        LinkedList<Integer> blackListOcurrences=new LinkedList<>();
         
+        LinkedList<Block> segmentacion=new LinkedList<Block>();
+        LinkedList<Integer> blackListOcurrences=new LinkedList<>();
+        int temp=99;
         int ocurrencesCount=0;
+        int hilos=0;
+        //Thread hiloTemp;
+        Block hiloTemp;
+        
+        
         
         HostBlacklistsDataSourceFacade skds=HostBlacklistsDataSourceFacade.getInstance();
         int numServ=skds.getRegisteredServersCount();
@@ -41,49 +47,60 @@ public class HostBlackListsValidator {
         int rango=0;
         int contador=0;
         
-        //skds.
-        //segmentacion.
-        
-        if(N/2==0){
-            rango=numServ/N;
+        if(N%2==0){
             
+            rango=numServ/N;
             for (int i =0; i<N; i++){
-                
-                Thread t= new Thread (new Block (contador+rango, ipaddress,N));
+                System.out.println("entra?");
+                //Block t= (new Block (contador+rango, ipaddress,N));
+                Block t= (new Block (contador,rango, ipaddress,N));
+                t.start();
+                System.out.println("mirar el estado"+t.isAlive());
                 segmentacion.add(t);
                 contador+=rango;
-                t.start();            
+                rango+=rango;
+                //t.start();            
             }
-            
-            
+            while(temp!=0){
+                while(hilos!=N-1){
+                    int tam=segmentacion.size();
+                    
+                    hiloTemp= segmentacion.get(hilos);
+//                    System.out.println("mirar el estado"+hiloTemp.isAlive());
+                    if(!hiloTemp.isAlive()){
+                        hilos+=1;
+                        ocurrencesCount+=hiloTemp.ocurrencesCount;                        
+                        
+                        System.out.println("mirar que pasa"+  ocurrencesCount);
+                    }
+                    //hilos++;
+                }
+                temp=0;
+            }
             //Se va a obtener la lista de sservidores a consultar
-            
+            /*           
             for (int i=0;i<skds.getRegisteredServersCount() && ocurrencesCount<BLACK_LIST_ALARM_COUNT;i++){
                 checkedListsCount++;
-
                 if (skds.isInBlackListServer(i, ipaddress)){
-
                     blackListOcurrences.add(i);
-
                     ocurrencesCount++;
                 }
             }
-
+            */
             if (ocurrencesCount>=BLACK_LIST_ALARM_COUNT){
                 skds.reportAsNotTrustworthy(ipaddress);
             }
             else{
                 skds.reportAsTrustworthy(ipaddress);
             }                
-
             LOG.log(Level.INFO, "Checked Black Lists:{0} of {1}", new Object[]{checkedListsCount, skds.getRegisteredServersCount()});
+            
         }
         else{
         
         
         
         }
-        
         return blackListOcurrences;
     }
     
