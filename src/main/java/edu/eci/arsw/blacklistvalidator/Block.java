@@ -52,12 +52,13 @@ public class Block extends Thread {
         
         for (int i=inicio;i<fin && ocurrencesCount<BLACK_LIST_ALARM_COUNT;i++){
             checkedListsCount++;
-
+            //System.out.println("emprime"+Thread.currentThread ().getName());
             if (skds.isInBlackListServer(i, ipaddress)){
-
+                System.out.println("imprime culpable");
                 blackListOcurrences.add(i);
-                System.out.println("ver en la raiz el count"+ocurrencesCount);
+                
                 ocurrencesCount++;
+                System.out.println("ver en la raiz el count"+ocurrencesCount);
             }
         }    
            

@@ -29,7 +29,7 @@ public class HostBlackListsValidator {
      * @param ipaddress suspicious host's IP address.
      * @return  Blacklists numbers where the given host's IP address was found.
      */
-    public List<Integer> checkHost(String ipaddress, int N){
+    public List<Integer> checkHost(String ipaddress, int N) throws InterruptedException{
         
         LinkedList<Block> segmentacion=new LinkedList<Block>();
         LinkedList<Integer> blackListOcurrences=new LinkedList<>();
@@ -48,17 +48,17 @@ public class HostBlackListsValidator {
         int contador=0;
         
         if(N%2==0){
-            
+            System.out.println("num sever"+numServ/6);
             rango=numServ/N;
             for (int i =0; i<N; i++){
-                System.out.println("entra?");
-                //Block t= (new Block (contador+rango, ipaddress,N));
-                Block t= (new Block (contador,rango, ipaddress,N));
+                //System.out.println("contador"+contador);
+                //System.out.println("rango orma"+rango);
+                //System.out.println("rango"+rango*(i+1));
+                Block t= (new Block (contador,rango*(i+1), ipaddress,N));
                 t.start();
-                System.out.println("mirar el estado"+t.isAlive());
                 segmentacion.add(t);
                 contador+=rango;
-                rango+=rango;
+                //rango+=rango;
                 //t.start();            
             }
             while(temp!=0){
@@ -71,7 +71,7 @@ public class HostBlackListsValidator {
                         hilos+=1;
                         ocurrencesCount+=hiloTemp.ocurrencesCount;                        
                         
-                        System.out.println("mirar que pasa"+  ocurrencesCount);
+                        //System.out.println("mirar que pasa"+  ocurrencesCount);
                     }
                     //hilos++;
                 }
@@ -88,6 +88,7 @@ public class HostBlackListsValidator {
             }
             */
             if (ocurrencesCount>=BLACK_LIST_ALARM_COUNT){
+                //System.out.println("entra a alarma?");
                 skds.reportAsNotTrustworthy(ipaddress);
             }
             else{
