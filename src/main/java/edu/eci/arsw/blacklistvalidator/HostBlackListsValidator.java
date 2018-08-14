@@ -36,11 +36,7 @@ public class HostBlackListsValidator {
         int temp=99;
         int ocurrencesCount=0;
         int hilos=0;
-        //Thread hiloTemp;
         Block hiloTemp;
-        
-        
-        
         HostBlacklistsDataSourceFacade skds=HostBlacklistsDataSourceFacade.getInstance();
         int numServ=skds.getRegisteredServersCount();
         int checkedListsCount=0;
@@ -52,62 +48,39 @@ public class HostBlackListsValidator {
             rango=numServ/N;
             for (int i =0; i<N; i++){
                 //System.out.println("contador"+contador);
-                //System.out.println("rango orma"+rango);
-                //System.out.println("rango"+rango*(i+1));
                 Block t= (new Block (contador,rango*(i+1), ipaddress,N));
                 t.start();
                 segmentacion.add(t);
                 contador+=rango;
-                //rango+=rango;
-                //t.start();            
             }
             while(temp!=0){
                 while(hilos!=N-1){
                     int tam=segmentacion.size();
                     
                     hiloTemp= segmentacion.get(hilos);
-//                    System.out.println("mirar el estado"+hiloTemp.isAlive());
                     if(!hiloTemp.isAlive()){
                         hilos+=1;
                         ocurrencesCount+=hiloTemp.ocurrencesCount;                        
-                        
-                        //System.out.println("mirar que pasa"+  ocurrencesCount);
+                        hiloTemp.join();
+                        System.out.println("miremos que pasa");
+ 
                     }
-                    //hilos++;
                 }
                 temp=0;
             }
-            //Se va a obtener la lista de sservidores a consultar
-            /*           
-            for (int i=0;i<skds.getRegisteredServersCount() && ocurrencesCount<BLACK_LIST_ALARM_COUNT;i++){
-                checkedListsCount++;
-                if (skds.isInBlackListServer(i, ipaddress)){
-                    blackListOcurrences.add(i);
-                    ocurrencesCount++;
-                }
-            }
-            */
             if (ocurrencesCount>=BLACK_LIST_ALARM_COUNT){
-                //System.out.println("entra a alarma?");
                 skds.reportAsNotTrustworthy(ipaddress);
             }
             else{
                 skds.reportAsTrustworthy(ipaddress);
             }                
-            LOG.log(Level.INFO, "Checked Black Lists:{0} of {1}", new Object[]{checkedListsCount, skds.getRegisteredServersCount()});
-            
+            LOG.log(Level.INFO, "Checked Black Lists:{0} of {1}", new Object[]{checkedListsCount, skds.getRegisteredServersCount()});            
         }
         else{
-        
-        
-        
         }
         return blackListOcurrences;
     }
-    
-    
+
     private static final Logger LOG = Logger.getLogger(HostBlackListsValidator.class.getName());
-    
-    
-    
+      
 }
