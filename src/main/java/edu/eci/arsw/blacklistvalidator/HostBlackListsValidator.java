@@ -33,49 +33,61 @@ public class HostBlackListsValidator {
         
         LinkedList<Block> segmentacion=new LinkedList<Block>();
         LinkedList<Integer> blackListOcurrences=new LinkedList<>();
-        int temp=99;
         int ocurrencesCount=0;
         int hilos=0;
         Block hiloTemp;
+        int serverRegistration=0;
         HostBlacklistsDataSourceFacade skds=HostBlacklistsDataSourceFacade.getInstance();
         int numServ=skds.getRegisteredServersCount();
         int checkedListsCount=0;
         int rango=0;
         int contador=0;
-        
+        int i=0;
+        Boolean cod=true;
         if(N%2==0){
             System.out.println("num sever"+numServ/6);
             rango=numServ/N;
-            for (int i =0; i<N; i++){
+            //for (int i =0; i<N; i++){
+            while(i<N & cod){
                 //System.out.println("contador"+contador);
                 Block t= (new Block (contador,rango*(i+1), ipaddress,N));
                 t.start();
+                t.join();
                 segmentacion.add(t);
                 contador+=rango;
-            }
-            while(temp!=0){
-                while(hilos!=N-1){
-                    int tam=segmentacion.size();
+
+                ocurrencesCount+=t.ocurrencesCount;
+                //System.out.println("CUanto vale la cuenta"+t.ocurrencesCount);
+                if(ocurrencesCount>=5){
+                    System.out.println("Cuando entremos");
+                    checkedListsCount=t.checkedListsCount;
+                    serverRegistration=t.registeredServersCount;
                     
-                    hiloTemp= segmentacion.get(hilos);
-                    if(!hiloTemp.isAlive()){
-                        hilos+=1;
-                        ocurrencesCount+=hiloTemp.ocurrencesCount;                        
-                        hiloTemp.join();
-                        System.out.println("miremos que pasa");
- 
-                    }
+                    cod=false;
                 }
-                temp=0;
+                System.out.println("CUanto vale la cuenta prin"+t.ocurrencesCount);
+                i++;
             }
+                /**
+            while(hilos!=N-1){
+                int tam=segmentacion.size();
+                hiloTemp= segmentacion.get(hilos);
+                if(!hiloTemp.isAlive()){          
+                    hilos+=1;
+                    ocurrencesCount+=hiloTemp.ocurrencesCount;                        
+                    hiloTemp.join();
+                    System.out.println("miremos que pasa");
+                }
+            }
+*/
             if (ocurrencesCount>=BLACK_LIST_ALARM_COUNT){
                 skds.reportAsNotTrustworthy(ipaddress);
             }
             else{
                 skds.reportAsTrustworthy(ipaddress);
             }                
-            LOG.log(Level.INFO, "Checked Black Lists:{0} of {1}", new Object[]{checkedListsCount, skds.getRegisteredServersCount()});            
-        }
+            
+            LOG.log(Level.INFO, "Checked Black Lists:{0} of {1}", new Object[]{checkedListsCount, serverRegistration});                    }
         else{
         }
         return blackListOcurrences;
