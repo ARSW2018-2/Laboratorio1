@@ -45,41 +45,22 @@ public class HostBlackListsValidator {
         int i=0;
         Boolean cod=true;
         if(N%2==0){
-            System.out.println("num sever"+numServ/6);
             rango=numServ/N;
-            //for (int i =0; i<N; i++){
             while(i<N & cod){
-                //System.out.println("contador"+contador);
                 Block t= (new Block (contador,rango*(i+1), ipaddress,N));
                 t.start();
                 t.join();
                 segmentacion.add(t);
                 contador+=rango;
-
                 ocurrencesCount+=t.ocurrencesCount;
-                //System.out.println("CUanto vale la cuenta"+t.ocurrencesCount);
                 if(ocurrencesCount>=5){
-                    System.out.println("Cuando entremos");
                     checkedListsCount=t.checkedListsCount;
                     serverRegistration=t.registeredServersCount;
                     
                     cod=false;
                 }
-                System.out.println("CUanto vale la cuenta prin"+t.ocurrencesCount);
                 i++;
             }
-                /**
-            while(hilos!=N-1){
-                int tam=segmentacion.size();
-                hiloTemp= segmentacion.get(hilos);
-                if(!hiloTemp.isAlive()){          
-                    hilos+=1;
-                    ocurrencesCount+=hiloTemp.ocurrencesCount;                        
-                    hiloTemp.join();
-                    System.out.println("miremos que pasa");
-                }
-            }
-*/
             if (ocurrencesCount>=BLACK_LIST_ALARM_COUNT){
                 skds.reportAsNotTrustworthy(ipaddress);
             }
